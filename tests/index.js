@@ -13,6 +13,15 @@ const req = request.defaults({
 test.before.cb((t) => {
     let app = new koa()
     
+    app.use(async function (ctx, next) {
+        try {
+            await next()
+        } catch(err) {
+            if (err.message === 'error test') {
+                ctx.body = 'error'
+            }
+        }
+    })
     app.use(service({ dir: './tests' }))
     app.use(mount('/service', async function(ctx, next) {
         ctx.body = await ctx.service('service').findDataById(ctx, { foo: 'bar' })
@@ -22,6 +31,9 @@ test.before.cb((t) => {
     }))
     app.use(mount('/service_cache', async function(ctx, next) {
         ctx.body = await ctx.service('service').findDataById(ctx, { foo: 'bar' })
+    }))
+    app.use(mount('/service_error', async function(ctx, next) {
+        await ctx.service('service').error(ctx, { foo: 'bar' })
     }))
     app.listen(3000, t.end)
 })
@@ -43,6 +55,13 @@ test.cb('service not found', (t) => {
 test.cb('service cache', (t) => {
     req.get('/service_cache', (err, res, body) => {
         t.deepEqual(body, { foo: 'bar' })
+        t.end()
+    })
+})
+
+test.cb('service throw error', (t) => {
+    req.get('/service_error', (err, res, body) => {
+        t.deepEqual(body, 'error')
         t.end()
     })
 })
