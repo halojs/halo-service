@@ -27,7 +27,7 @@ test.before.cb((t) => {
         ctx.body = await ctx.service('service').findDataById(ctx, { foo: 'bar' })
     }))
     app.use(mount('/service_notfound', async function(ctx, next) {
-        ctx.body = ctx.service('foo')
+        ctx.body = await ctx.service('foo')
     }))
     app.use(mount('/service_cache', async function(ctx, next) {
         ctx.body = await ctx.service('service').findDataById(ctx, { foo: 'bar' })
@@ -47,7 +47,7 @@ test.cb('service', (t) => {
 
 test.cb('service not found', (t) => {
     req.get('/service_notfound', (err, res, body) => {
-        t.deepEqual(body, {})
+        t.deepEqual(body, 'Not Found')
         t.end()
     })
 })

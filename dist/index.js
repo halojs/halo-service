@@ -28,7 +28,7 @@ exports.default = function (options = {}) {
                 try {
                     Service = required(path);
                 } catch (e) {
-                    return {};
+                    throw e.message;
                 }
 
                 service = new Service();

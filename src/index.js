@@ -24,7 +24,7 @@ export default function (options = {}) {
 
                 try {
                     Service = required(path)
-                } catch(e) { return {} }
+                } catch(e) { throw e.message }
                 
                 service = new Service()
                 cache.set(path, service)
